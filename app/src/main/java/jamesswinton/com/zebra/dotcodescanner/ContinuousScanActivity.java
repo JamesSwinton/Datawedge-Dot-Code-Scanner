@@ -1,10 +1,13 @@
 package jamesswinton.com.zebra.dotcodescanner;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import jamesswinton.com.zebra.dotcodescanner.databinding.ActivityContinuousScanBinding;
 
@@ -20,7 +23,7 @@ public class ContinuousScanActivity extends AppCompatActivity {
     private ActivityContinuousScanBinding mDataBinding;
 
     private IntentFilter mDataWedgeIntentFilter;
-    private DataWedgeReceiver mDataWedgeReceiver;
+    private BroadcastReceiver mDataWedgeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +44,8 @@ public class ContinuousScanActivity extends AppCompatActivity {
             mDataWedgeIntentFilter.addAction(getResources().getString(R.string.scan_intent_action));
         }
 
-        // Create Instance of Broadcast Receiver
-        if (mDataWedgeReceiver == null) {
-            mDataWedgeReceiver = new DataWedgeReceiver();
-        }
-
         // Register Receiver
-        registerReceiver(mDataWedgeReceiver, mDataWedgeIntentFilter);
+        registerReceiver(dataWedgeBroadcastReceiver, mDataWedgeIntentFilter);
     }
 
     @Override
@@ -55,8 +53,23 @@ public class ContinuousScanActivity extends AppCompatActivity {
         super.onStop();
 
         // Un-Register Receiver
-        if (mDataWedgeReceiver != null) {
-            unregisterReceiver(mDataWedgeReceiver);
+        if (dataWedgeBroadcastReceiver != null) {
+            unregisterReceiver(dataWedgeBroadcastReceiver);
         }
+    }
+
+    private BroadcastReceiver dataWedgeBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Log Receipt of Intent
+            Log.i(TAG, "DataWedge Intent Received");
+
+            // Handle Intent
+            processDataWedgeIntent(context, intent);
+        }
+    };
+
+    private void processDataWedgeIntent(Context cx, Intent dataWedgeIntent) {
+
     }
 }
