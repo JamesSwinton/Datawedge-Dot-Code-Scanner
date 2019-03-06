@@ -48,7 +48,9 @@ public class ContinuousScanActivity extends AppCompatActivity {
     // Variables
     private ActivityContinuousScanBinding mDataBinding;
     private IntentFilter mDataWedgeIntentFilter;
-    private BroadcastReceiver mDataWedgeReceiver;
+
+    private BarcodeAdapter mBarcodeAdapter;
+    private List<String> mBarcodes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,14 @@ public class ContinuousScanActivity extends AppCompatActivity {
 
         // Init DataBinding
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_continuous_scan);
+
+        // Init Soft Scan Toggle Button
+        mDataBinding.scanToggle.setOnCheckedChangeListener(this::toggleScan);
+
+        // Init RecyclerView
+        mDataBinding.scanDataRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mBarcodeAdapter = new BarcodeAdapter(this, mBarcodes);
+        mDataBinding.scanDataRecyclerView.setAdapter(mBarcodeAdapter);
     }
 
     @Override
@@ -95,6 +105,14 @@ public class ContinuousScanActivity extends AppCompatActivity {
     };
 
     private void processDataWedgeIntent(Context cx, Intent dataWedgeIntent) {
+        // Get Barcode
+        String barcode = dataWedgeIntent.getStringExtra(getResources()
+                .getString(R.string.intent_data));
 
+        // Add Barcode to Array
+        mBarcodes.add(barcode);
+
+        // Refresh Adapter
+        mBarcodeAdapter.notifyDataSetChanged();
     }
 }
