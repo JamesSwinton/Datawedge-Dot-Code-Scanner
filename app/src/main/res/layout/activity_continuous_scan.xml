@@ -1,18 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".ContinuousScanActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- BASE LAYOUT-->
+    <LinearLayout
+        android:id="@+id/base_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:weightSum="10">
 
-</android.support.constraint.ConstraintLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/scan_data_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="4dp">
+
+            <LinearLayout
+                android:id="@+id/scan_data_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/scan_data_card_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:text="@string/scan_data_title"
+                    android:gravity="center"
+                    android:textColor="#757575"
+                    android:textStyle="bold"
+                    android:textSize="10pt"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="#bdbdbd"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/scan_data_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <ToggleButton
+            android:id="@+id/scan_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textOn=""
+            android:textOff=""
+            android:layout_weight="2"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/selector_custom_toggle"/>
+
+    </LinearLayout>
+    <!-- END BASE LAYOUT -->
+</layout>
