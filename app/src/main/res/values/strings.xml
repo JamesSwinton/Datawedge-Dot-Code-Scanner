@@ -1,3 +1,17 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">Dot Code Scanner</string>
+
+    <!-- Continuous Scan Activity Strings -->
+    <string name="scan_data_title">Scanned Data</string>
+
+    <!-- DataWedge Strings -->
+    <string name="intent_action">com.zebra.example.DOTCODE</string>
+    <string name="intent_data_type">
+      com.symbol.datawedge.label_type
+    </string>
+    <string name="intent_data">
+      com.symbol.datawedge.data_string
+    </string>
+
 </resources>
