@@ -76,8 +76,12 @@ public class ContinuousScanActivity extends AppCompatActivity {
         if (mDataWedgeIntentFilter == null) {
             mDataWedgeIntentFilter = new IntentFilter();
             mDataWedgeIntentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-            mDataWedgeIntentFilter.addAction(getResources().getString(R.string.scan_intent_action));
+            mDataWedgeIntentFilter.addAction("com.symbol.datawedge.api.NOTIFICATION_ACTION");
+            mDataWedgeIntentFilter.addAction(getResources().getString(R.string.intent_action));
         }
+
+        // Register for Notifications
+        registerForNotifications();
 
         // Register Receiver
         registerReceiver(dataWedgeBroadcastReceiver, mDataWedgeIntentFilter);
@@ -93,16 +97,83 @@ public class ContinuousScanActivity extends AppCompatActivity {
         }
     }
 
+    private void registerForNotifications() {
+        Bundle registerNotificationsBundle = new Bundle();
+        registerNotificationsBundle.putString(APPLICATION_NAME, getPackageName());
+        registerNotificationsBundle.putString(DW_NOTIFICATION_TYPE, SCANNER_STATUS);
+        Intent registerNotificationsIntent = new Intent();
+        registerNotificationsIntent.setAction(DATAWEDGE_ACTION);
+        registerNotificationsIntent.putExtra(REGISTER_FOR_NOTIFICATION, registerNotificationsBundle);
+        this.sendBroadcast(registerNotificationsIntent);
+    }
+
     private BroadcastReceiver dataWedgeBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Log Receipt of Intent
-            Log.i(TAG, "DataWedge Intent Received");
+            // Get Action
+            String intentAction = intent.getAction();
 
-            // Handle Intent
-            processDataWedgeIntent(context, intent);
+            // Log Receipt of Intent
+            Log.i(TAG, "DataWedge Intent Received | Action: " + intentAction);
+
+            // Exit if no Intent Action
+            if (intentAction == null) {
+                return;
+            }
+
+            if (intentAction.equals(NOTIFICATION_ACTION) && intent.hasExtra(NOTIFICATION)) {
+                handleNotificationIntent(intent);
+            } else {
+                // Handle Intent
+                processDataWedgeIntent(context, intent);
+            }
         }
     };
+
+    private void handleNotificationIntent(Intent notificationIntent) {
+        // Get Type
+        String type = notificationIntent.getBundleExtra(NOTIFICATION).getString(NOTIFICATION_TYPE);
+
+        // Get Scanner Status
+        if(type != null && type.equals(SCANNER_STATUS)) {
+
+            // Get Status
+            String scannerStatus = notificationIntent.getBundleExtra(NOTIFICATION).getString(STATUS);
+
+            // Log Status
+            Log.i(TAG, "Scanner Status: " + scannerStatus);
+
+            // Handle Status
+            if (scannerStatus != null) {
+                switch (scannerStatus) {
+                    case "WAITING":
+                    case "IDLE":
+                        if (mDataBinding.scanToggle.isChecked()) {
+                            toggleScan(null, true);
+                        }
+                        break;
+                    case "DISABLED":
+                        // TODO: Re-enable scanner
+                        break;
+                }
+            }
+        }
+    }
+
+    private void toggleScan(View toggleButton, boolean scanOn) {
+        // Start Or Stop Scan
+        if (scanOn) {
+            Intent i = new Intent();
+            i.setAction(DATAWEDGE_ACTION);
+            i.putExtra(SOFT_SCAN_TRIGGER, START_SCANNING);
+            this.sendBroadcast(i);
+        } else {
+            Intent i = new Intent();
+            i.setAction(DATAWEDGE_ACTION);
+            i.putExtra(SOFT_SCAN_TRIGGER, STOP_SCANNING);
+            this.sendBroadcast(i);
+        }
+    }
 
     private void processDataWedgeIntent(Context cx, Intent dataWedgeIntent) {
         // Get Barcode
